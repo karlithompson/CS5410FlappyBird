@@ -9,13 +9,20 @@ public partial class PipeSpawner : Node
 
     private Timer _timer;
 
-    public override void _Ready()
-    {
-        _timer = GetNode<Timer>("Timer");
-        _timer.WaitTime = SpawnInterval;
-        _timer.Timeout += SpawnPipe;
-        _timer.Start();
-    }
+	public override void _Ready()
+	{
+		_timer = GetNode<Timer>("Timer");
+		_timer.WaitTime = SpawnInterval;
+		_timer.Timeout += SpawnPipe;
+
+		_timer.Stop();
+		AddToGroup("spawners");
+	}
+
+	public void StartSpawning()
+	{
+		_timer.Start();
+	}
 
     private void SpawnPipe()
 	{
@@ -47,5 +54,8 @@ public partial class PipeSpawner : Node
 		GD.Print($"Spawned pipe Gap = {pipe.Gap}");
 		pipe.ApplyGap();
 	}
-
+	public void StopSpawning()
+	{
+		_timer.Stop();
+	}
 }
