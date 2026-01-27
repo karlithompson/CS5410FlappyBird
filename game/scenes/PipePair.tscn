@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://bt2jgjwys8p11"]
+[gd_scene load_steps=8 format=3 uid="uid://bt2jgjwys8p11"]
 
 [ext_resource type="Script" uid="uid://cw50r75u72x64" path="res://scenes/PipePair.cs" id="1_5o3v1"]
 [ext_resource type="Texture2D" uid="uid://1owot6wgu7gf" path="res://Flappy Bird Assets/Tiles/Style 1/PipeStyle1.png" id="2_ug5ql"]
 [ext_resource type="Script" uid="uid://dsh270vlbuwqh" path="res://scripts/ScoreZone.cs" id="3_rpe1r"]
+[ext_resource type="AudioStream" uid="uid://vgfciky5dgk3" path="res://Flappy Bird Assets/sounds/point.wav" id="4_5tnjs"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0omv6"]
 size = Vector2(73.99658, 700)
@@ -160,6 +161,13 @@ region_rect = Rect2(3, 19, 26, 41)
 
 [node name="ScoreZone" type="Area2D" parent="."]
 script = ExtResource("3_rpe1r")
+
+[node name="scoresound" type="AudioStreamPlayer2D" parent="ScoreZone"]
+position = Vector2(80.00001, 0)
+rotation = -0.0016048129
+scale = Vector2(4, 10.000001)
+stream = ExtResource("4_5tnjs")
+volume_db = -12.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ScoreZone"]
 position = Vector2(80, 0)

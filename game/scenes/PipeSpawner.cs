@@ -24,6 +24,7 @@ public partial class PipeSpawner : Node
 		_timer.Start();
 	}
 
+
     private void SpawnPipe()
 	{
 		var instanced = PipePairScene.Instantiate();
@@ -41,8 +42,8 @@ public partial class PipeSpawner : Node
 		float cameraTop = camera.GlobalPosition.Y - viewSize.Y / 2f;
 		float cameraBottom = camera.GlobalPosition.Y + viewSize.Y / 2f;
 
-		float topMargin = 120f;     // prevents gap going too high
-		float bottomMargin = 200f;  // prevents gap going too low (THIS fixes “top pipe near floor” feel)
+		float topMargin = 120f;    
+		float bottomMargin = 200f;  
 
 		float minCenter = cameraTop + topMargin;
 		float maxCenter = cameraBottom - bottomMargin;

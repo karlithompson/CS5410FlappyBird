@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://b70rn6ovjdlah"]
+
+[ext_resource type="Script" uid="uid://cxcsq2eu45pk6" path="res://scenes/Floor.cs" id="1_al5gx"]
+[ext_resource type="Texture2D" uid="uid://5qf7rg8mep86" path="res://Flappy Bird Assets/demo-img-3.png" id="1_dmu3r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_al5gx"]
+size = Vector2(2053.0293, 49.33993)
+
+[node name="Floor" type="Node2D"]
+script = ExtResource("1_al5gx")
+
+[node name="Sprite2D" type="Sprite2D" parent="." groups=["floor"]]
+z_index = 10
+scale = Vector2(4, 4)
+texture = ExtResource("1_dmu3r")
+region_enabled = true
+region_rect = Rect2(0, 208, 513, 16)
+
+[node name="Area2D" type="Area2D" parent="." groups=["floor"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(3.4843693, -5.3273454)
+shape = SubResource("RectangleShape2D_al5gx")

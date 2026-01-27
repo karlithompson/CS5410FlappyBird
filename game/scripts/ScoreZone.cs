@@ -3,11 +3,14 @@ using Godot;
 public partial class ScoreZone : Area2D
 {
 	private bool scored = false;
+	
+	private AudioStreamPlayer2D scoresound;
 
 	public override void _Ready()
 	{
 		AreaEntered += OnAreaEntered;
-		
+
+		scoresound = GetNode<AudioStreamPlayer2D>("scoresound");
 	}
 
 	private void OnAreaEntered(Area2D area)
@@ -17,8 +20,9 @@ public partial class ScoreZone : Area2D
 
 		if (area.IsInGroup("player"))
 		{
+			scoresound.Play();
 			scored = true;
-			Monitoring = false;
+			CallDeferred("set_monitoring", false);
 			GetTree().CallGroup("score", "AddPoint");
 		}
 	}

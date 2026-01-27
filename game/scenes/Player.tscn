@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://evgs2en8b83r"]
+[gd_scene load_steps=10 format=3 uid="uid://evgs2en8b83r"]
 
 [ext_resource type="Texture2D" uid="uid://b51c6sntorb03" path="res://Flappy Bird Assets/Player/StyleBird2/AllBird2.png" id="1_p0vlq"]
+[ext_resource type="AudioStream" uid="uid://cqyuf82ctepik" path="res://Flappy Bird Assets/sounds/flap.wav" id="2_mdl7e"]
+[ext_resource type="AudioStream" uid="uid://cvppohivpq2tq" path="res://Flappy Bird Assets/sounds/die.wav" id="4_70d11"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_p0vlq"]
 radius = 23.086792
@@ -51,6 +53,15 @@ rotation = 0.0031793064
 shape = SubResource("CircleShape2D_p0vlq")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 12
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_70d11")
 animation = &"new_animation"
+
+[node name="flapsound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_mdl7e")
+volume_db = -6.0
+
+[node name="diesound" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_70d11")
+volume_db = -6.0

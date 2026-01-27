@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.ComponentModel;
 
 public partial class Player : Node2D
 {
@@ -19,19 +20,26 @@ public partial class Player : Node2D
 
 	private bool started = false;
 
-	private Vector2 halfSize;
-	[Export] public float MaxUpTiltDeg = -25f;    // nose up
-	[Export] public float MaxDownTiltDeg = 25;  // nose down
-	[Export] public float TiltSpeed = 10f;        // how fast it rotates to the target
+	private bool dying = false;
 
-	[Export] public float UpSpeedForMaxTilt = 350f;    // how fast upward to get full up tilt
+	private Vector2 halfSize;
+	[Export] public float MaxUpTiltDeg = -25f; 
+	[Export] public float MaxDownTiltDeg = 25;
+	[Export] public float TiltSpeed = 10f;  
+
+	[Export] public float UpSpeedForMaxTilt = 350f;  
 	[Export] public float DownSpeedForMaxTilt = 600f;
+
+	public AudioStreamPlayer2D flapSound;
+
+	public AudioStreamPlayer2D deathSound;
 
 	public override void _Ready()
 	{
 		sprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		sprite.Play("new_animation");
-
+		flapSound = GetNode<AudioStreamPlayer2D>("flapsound");
+		deathSound = GetNode<AudioStreamPlayer2D>("diesound");
 		halfSize = sprite.SpriteFrames.GetFrameTexture(sprite.Animation, 0).GetSize() * sprite.Scale / 2f;
 		started = false;
 		dead = false;
@@ -47,14 +55,18 @@ public partial class Player : Node2D
 		if (!dead)
 		{
 			if (Input.IsActionJustPressed("flap"))
-				{
+			{
 				if (!started)
-					{
-						started = true;
-						GetTree().CallGroup("spawners", "StartSpawning");
-					}
-					velocity.Y = flapStrength;
+				{
+					started = true;
+					var ui = GetTree().Root.GetNode<GameOverUI>("Main/CanvasLayer/GameOver");
+    				ui.HideAll();
+					GetTree().CallGroup("spawners", "StartSpawning");
+					GetTree().CallGroup("floor", "StartMoving");
 				}
+    			flapSound.Play();
+				velocity.Y = flapStrength;
+			}
 			
 		}
 
@@ -78,27 +90,27 @@ public partial class Player : Node2D
 			velocity.Y = 0;
 		}
 
-		if (gp.Y > cameraBottom)
+		float floorOffset = 62f; 
+
+		if (gp.Y > cameraBottom - floorOffset)
 		{
-			gp.Y = cameraBottom;
+			gp.Y = cameraBottom - floorOffset;
+			velocity.Y = 0;
 
 			if (!dead)
-			{
 				Die();
-			}
-			else
-			{
-				velocity.Y = 0;
-			}
 		}
 
-		float v = Mathf.Clamp(velocity.Y, -UpSpeedForMaxTilt, DownSpeedForMaxTilt);
-		float alpha = Mathf.InverseLerp(-UpSpeedForMaxTilt, DownSpeedForMaxTilt, v);
+		if (!dead){
+			
+			float v = Mathf.Clamp(velocity.Y, -UpSpeedForMaxTilt, DownSpeedForMaxTilt);
+			float alpha = Mathf.InverseLerp(-UpSpeedForMaxTilt, DownSpeedForMaxTilt, v);
 
-		float targetDeg = Mathf.Lerp(MaxUpTiltDeg, MaxDownTiltDeg, alpha);
-		float targetRad = Mathf.DegToRad(targetDeg);
+			float targetDeg = Mathf.Lerp(MaxUpTiltDeg, MaxDownTiltDeg, alpha);
+			float targetRad = Mathf.DegToRad(targetDeg);
 
-		sprite.Rotation = Mathf.LerpAngle(sprite.Rotation, targetRad, TiltSpeed * dt);
+			sprite.Rotation = Mathf.LerpAngle(sprite.Rotation, targetRad, TiltSpeed * dt);
+		}
 
 		GlobalPosition = gp;
 
@@ -108,8 +120,7 @@ public partial class Player : Node2D
 	public void OnAreaEntered(Area2D area)
 	{
 		if (dead) return;
-		GD.Print("GAME OVER" + area.Name);
-		if (area.IsInGroup("pipe"))
+		if (area.IsInGroup("pipe") || area.IsInGroup("floor"))
 		{
 			GD.Print("Hit pipe!");
 			Die();
@@ -118,8 +129,17 @@ public partial class Player : Node2D
 
 	private void Die()
 	{
+		if (dead) return;
+		deathSound.Play();
+		sprite.Stop();
 		dead = true;
+		GetTree().CallGroup("score", "ResetScore");
+		GD.Print(dead);
+		var ui = GetTree().Root.GetNode<GameOverUI>("Main/CanvasLayer/GameOver");
+		var sm = GetTree().GetFirstNodeInGroup("score") as ScoreManager;
+		ui.ShowGameOver(sm.HighScore);
 		GetTree().CallGroup("spawners", "StopSpawning");
+		GetTree().CallGroup("floor", "StopMoving");
 		GetTree().Paused = true;
 	}
 }
